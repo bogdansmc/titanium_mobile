@@ -255,7 +255,8 @@ static NSArray* popoverSequence;
 	[closingCondition unlock];
 
 	TiThreadPerformOnMainThread(^{
-		animated = [TiUtils boolValue:@"animated" properties:args def:NO];
+        [contentViewProxy windowWillClose];
+        animated = [TiUtils boolValue:@"animated" properties:args def:NO];
         if ([TiUtils isIOS8OrGreater]) {
             [[self viewController] dismissViewControllerAnimated:animated completion:^{
                 [self cleanup];
@@ -510,7 +511,7 @@ static NSArray* popoverSequence;
         UIView* view = [popoverView view];
         if (view != nil && (view.window != nil)) {
             popoverPresentationController.sourceView = view;
-            popoverPresentationController.sourceRect = (CGRectEqualToRect(CGRectZero, popoverRect)?CGRectMake(view.bounds.size.width/2, view.bounds.size.height/2, 1, 1):popoverRect);
+            popoverPresentationController.sourceRect = (CGRectEqualToRect(CGRectZero, popoverRect)?[view bounds]:popoverRect);
             return;
         }
     }
@@ -542,8 +543,8 @@ static NSArray* popoverSequence;
     UIView* theSourceView = *view;
     
     if (!canUseDialogRect) {
-        rect->origin = CGPointMake(theSourceView.bounds.size.width/2, theSourceView.bounds.size.height/2);
-        rect->size = CGSizeMake(1, 1);
+        rect->origin = [theSourceView bounds].origin;
+        rect->size = [theSourceView bounds].size;
     }
     
     popoverPresentationController.sourceRect = *rect;
